@@ -41,24 +41,24 @@ REQUIRED_COLS = [DATE_COL] + DIMENSIONS + METRICS
 # Product dates file
 # 배포 시 경로 문제를 방지하기 위해 여러 경로를 시도
 # 1. 환경 변수로 지정된 경로
-# 2. 현재 파일 기준 상위 디렉토리의 configs 폴더
-# 3. 현재 작업 디렉토리의 configs 폴더
+# 2. performance_dashboard 폴더 내부의 configs 폴더 (Streamlit Cloud용)
+# 3. 현재 파일 기준 상위 디렉토리의 configs 폴더 (로컬 개발용)
+# 4. 현재 작업 디렉토리의 configs 폴더
 _product_dates_env = os.getenv("PRODUCT_DATES_FILE")
 if _product_dates_env and os.path.exists(_product_dates_env):
     PRODUCT_DATES_FILE = _product_dates_env
 else:
-    # 현재 파일 위치 기준으로 상위 디렉토리의 configs 폴더 찾기
-    _config_dir = Path(__file__).parent.parent / "configs"
-    _product_dates_path = _config_dir / "product_dates.json"
-    
-    if _product_dates_path.exists():
-        PRODUCT_DATES_FILE = str(_product_dates_path)
+    # 1. performance_dashboard 폴더 내부의 configs 폴더 (Streamlit Cloud용)
+    _internal_config = Path(__file__).parent / "configs" / "product_dates.json"
+    if _internal_config.exists():
+        PRODUCT_DATES_FILE = str(_internal_config)
+    # 2. 현재 파일 위치 기준으로 상위 디렉토리의 configs 폴더 (로컬 개발용)
+    elif (Path(__file__).parent.parent / "configs" / "product_dates.json").exists():
+        PRODUCT_DATES_FILE = str(Path(__file__).parent.parent / "configs" / "product_dates.json")
+    # 3. 현재 작업 디렉토리 기준으로 시도
+    elif Path("configs/product_dates.json").exists():
+        PRODUCT_DATES_FILE = str(Path("configs/product_dates.json").resolve())
     else:
-        # 현재 작업 디렉토리 기준으로 시도
-        _cwd_config = Path("configs") / "product_dates.json"
-        if _cwd_config.exists():
-            PRODUCT_DATES_FILE = str(_cwd_config.resolve())
-        else:
-            # 기본값 (상대 경로, 배포 시 주의 필요)
-            PRODUCT_DATES_FILE = os.path.join("configs", "product_dates.json")
+        # 기본값 (상대 경로, fallback)
+        PRODUCT_DATES_FILE = os.path.join("configs", "product_dates.json")
 
