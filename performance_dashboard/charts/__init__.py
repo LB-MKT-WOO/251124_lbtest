@@ -1,0 +1,2 @@
+"""Chart generation functions."""
+
