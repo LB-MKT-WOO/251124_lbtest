@@ -1,0 +1,82 @@
+{
+  "products": [
+    {
+      "id": 1,
+      "name": "1호 안국 다운타우너",
+      "theme_color": "#273572",
+      "start_date": "2022-04-21",
+      "end_date": "2022-06-09"
+    },
+    {
+      "id": 2,
+      "name": "2호 이태원 베리베리베리머치",
+      "theme_color": "#3E463B",
+      "start_date": "2022-07-11",
+      "end_date": "2022-08-23"
+    },
+    {
+      "id": 4,
+      "name": "3호 대전 창업스페이스",
+      "theme_color": "#223B5E",
+      "start_date": "2022-11-23",
+      "end_date": "2022-12-08"
+    },
+    {
+      "id": 5,
+      "name": "4호 문래 공차",
+      "theme_color": "#983B43",
+      "start_date": "2023-04-07",
+      "end_date": "2023-04-28"
+    },
+    {
+      "id": 6,
+      "name": "5호 전주 시화연풍",
+      "theme_color": "#373737",
+      "start_date": "2023-07-03",
+      "end_date": "2023-07-31"
+    },
+    {
+      "id": 7,
+      "name": "6호 수원행궁 뉴스뮤지엄",
+      "theme_color": "#282828",
+      "start_date": "2023-10-04",
+      "end_date": "2023-11-16"
+    },
+    {
+      "id": 8,
+      "name": "7호 신도림 핀포인트타워 1호",
+      "theme_color": "#2EA4AB",
+      "start_date": "2023-11-24",
+      "end_date": "2023-12-14"
+    },
+    {
+      "id": 9,
+      "name": "8호 신도림 핀포인트타워 2호",
+      "theme_color": "#2EA4AB",
+      "start_date": "2024-01-29",
+      "end_date": "2024-03-08"
+    },
+    {
+      "id": 10,
+      "name": "9호 성수 코오롱타워 1호",
+      "theme_color": "#2C5CA5",
+      "start_date": "2024-03-27",
+      "end_date": "2024-05-03"
+    },
+    {
+      "id": 11,
+      "name": "10호 신도림 핀포인트타워 3호",
+      "theme_color": "#2EA3AB",
+      "start_date": "2024-06-27",
+      "end_date": "2024-08-02"
+    },
+    {
+      "id": 13,
+      "name": "11호 대전 하나 스타트업파크",
+      "theme_color": "#7FDDEB",
+      "start_date": "2025-02-28",
+      "end_date": "2025-04-10"
+    }
+  ]
+}
+
