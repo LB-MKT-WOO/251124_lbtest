@@ -4,6 +4,7 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 import altair as alt
+import plotly.graph_objects as go
 
 from performance_dashboard.data.product_loader import load_product_dates
 from performance_dashboard.utils.helpers import safe_divide
@@ -292,7 +293,7 @@ def _render_individual_product_analysis(df, products):
                               cvr_signup, cvr_create_account, cvr_deposit, cvr_initial_offering)
     
     with col2:
-        _render_product_cost_comparison(cpi, signup_cost, cac_create, offering_cost)
+        _render_product_cost_waterfall(cpi, signup_cost, cac_create, offering_cost)
     
     with col3:
         _render_product_roas_comparison(deposit_roas, initial_offering_roas)
@@ -397,30 +398,72 @@ def _render_product_funnel(total_installs, total_signup, total_create_account, t
     st.altair_chart(funnel_chart, use_container_width=True)
 
 
-def _render_product_cost_comparison(cpi, signup_cost, cac_create, offering_cost):
-    """Product 단가 비교 차트"""
-    st.markdown("**단가 비교**")
-    cost_data = pd.DataFrame({
-        '단가유형': ['CPI', '회원가입단가', '지갑개설단가', '청약단가'],
-        '단가': [
-            cpi if not np.isnan(cpi) else 0,
-            signup_cost if not np.isnan(signup_cost) else 0,
-            cac_create if not np.isnan(cac_create) else 0,
-            offering_cost if not np.isnan(offering_cost) else 0
-        ]
-    })
+def _render_product_cost_waterfall(cpi, signup_cost, cac_create, offering_cost):
+    """Product 단가 폭포 차트 (Waterfall Chart)"""
+    st.markdown("**단가 증가 분석**", unsafe_allow_html=True)
     
-    cost_chart = alt.Chart(cost_data).mark_bar().encode(
-        x=alt.X('단가유형:N', sort=['CPI', '회원가입단가', '지갑개설단가', '청약단가'], title='단가 유형'),
-        y=alt.Y('단가:Q', title='단가 (₩)'),
-        color=alt.Color('단가유형:N', legend=None, scale=alt.Scale(scheme='set2')),
-        tooltip=[
-            alt.Tooltip('단가유형:N', title='단가 유형'),
-            alt.Tooltip('단가:Q', title='단가', format=',.0f')
-        ]
-    ).properties(height=300).interactive()
+    # NaN 값 처리
+    cpi_val = cpi if not np.isnan(cpi) else 0
+    signup_val = signup_cost if not np.isnan(signup_cost) else 0
+    cac_val = cac_create if not np.isnan(cac_create) else 0
+    offering_val = offering_cost if not np.isnan(offering_cost) else 0
     
-    st.altair_chart(cost_chart, use_container_width=True)
+    # 폭포 차트 데이터 준비
+    categories = [
+        'CPI',
+        '회원가입',
+        '지갑개설', 
+        '청약 전환',
+        '최종 전환 단가'
+    ]
+    
+    measures = [
+        'absolute',  # 시작점
+        'relative',  # 증가분 1
+        'relative',  # 증가분 2
+        'relative',  # 증가분 3
+        'total'      # 최종 합계
+    ]
+    
+    values = [
+        cpi_val,                           # CPI 시작값
+        signup_val - cpi_val,              # 회원가입 증가분
+        cac_val - signup_val,              # 지갑개설 증가분
+        offering_val - cac_val,            # 청약 증가분
+        offering_val                       # 최종 전환 단가
+    ]
+    
+    # Plotly Graph Objects를 사용한 Waterfall 차트 생성
+    fig = go.Figure(go.Waterfall(
+        name="단가 분석",
+        orientation="v",
+        measure=measures,
+        x=categories,
+        textposition="outside",
+        text=[f"{v:,.0f}원" for v in values],
+        y=values,
+        connector={"line": {"color": "rgb(63, 63, 63)"}},
+    ))
+    
+    # Y축 최대값 계산 (최종 전환 단가보다 20% 높게 설정)
+    max_value = max(offering_val, max([abs(v) for v in values]))
+    y_max = max_value * 1.2
+    
+    # 차트 레이아웃 설정
+    fig.update_layout(
+        height=300,
+        yaxis_title="단가 (₩)",
+        yaxis=dict(
+            tickformat=",.0f",
+            range=[0, y_max]  # Y축 범위를 명시적으로 설정
+        ),
+        showlegend=False,
+        font=dict(size=12),
+        margin=dict(t=20, b=40, l=60, r=20)  # 상단 마진 최소화, 차트를 위로 올림
+    )
+    
+    # Streamlit에서 차트 표시
+    st.plotly_chart(fig, use_container_width=True, config={'displayModeBar': False})
 
 
 def _render_product_roas_comparison(deposit_roas, initial_offering_roas):
